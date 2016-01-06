@@ -44,6 +44,7 @@ func catchSignal() {
 	ch := make(chan os.Signal)
 	signal.Notify(ch, syscall.SIGINT)
 	<-ch
+	g_list.Exit()
 	os.Exit(0)
 }
 
