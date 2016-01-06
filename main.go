@@ -20,7 +20,6 @@ const (
 
 var (
 	bindAddress *string = flag.String("BindAddress", ":8001", "The bind address.")
-	root        *string = flag.String("Root", "/root/src", "The root path.")
 )
 
 var g_list *list.List
@@ -66,4 +65,5 @@ func addHandler(w http.ResponseWriter, req *http.Request) {
 		Time:     int64(timeInt),
 		Callback: callback,
 	})
+	w.Write([]byte(`{"ret":"1","msg":"OK"}`))
 }
