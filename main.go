@@ -20,7 +20,8 @@ const (
 )
 
 var (
-	bindAddress *string = flag.String("BindAddress", ":8001", "The bind address.")
+	bindAddress *string = flag.String("BindAddress", ":18001", "The bind address.")
+	savefile    *string = flag.String("SaveFile", "./save.json", "The save file.")
 )
 
 var g_list *list.List
@@ -31,7 +32,7 @@ func main() {
 		flag.PrintDefaults()
 	}
 	flag.Parse()
-	g_list = list.NewList()
+	g_list = list.NewList(*savefile)
 
 	http.HandleFunc("/add", addHandler)
 
@@ -70,5 +71,5 @@ func addHandler(w http.ResponseWriter, req *http.Request) {
 		Time:     timeInt,
 		Callback: callback,
 	})
-	w.Write([]byte(`{"ret":"1","msg":"OK"}`))
+	w.Write([]byte(`{"ret":"1","msg":"OddK"}`))
 }

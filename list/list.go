@@ -1,19 +1,23 @@
 package list
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"sort"
 	"sync"
 	"time"
 )
 
 type Timer struct {
-	Time     int64
-	Callback string
+	Time     int64  `json:"time"`
+	Callback string `json:"callback"`
 }
 
 type List struct {
+	savefile string
 	list     []*Timer
 	locker   sync.Mutex
 	exitChan chan bool
@@ -31,9 +35,22 @@ func (l *List) Swap(i, j int) {
 	l.list[i], l.list[j] = l.list[j], l.list[i]
 }
 
-func NewList() *List {
+func NewList(savefile string) *List {
 	l := &List{
 		exitChan: make(chan bool),
+		savefile: savefile,
+	}
+	file, err := os.Open(savefile)
+	if err == nil {
+		dec := json.NewDecoder(file)
+		var timers []Timer
+		err = dec.Decode(&timers)
+		if err == nil {
+			for _, t := range timers {
+				l.list = append(l.list, &t)
+			}
+		}
+		file.Close()
 	}
 	go l.Run()
 	return l
@@ -50,6 +67,27 @@ func (l *List) Run() {
 	}
 }
 
+func (l *List) Save() {
+	l.locker.Lock()
+	defer l.locker.Unlock()
+	// save
+	fmt.Printf("Save, len: %d\n", len(l.list))
+	if file, err := os.Create(l.savefile); err == nil {
+		var timers []Timer
+		for _, t := range l.list {
+			if t != nil {
+				timers = append(timers, *t)
+			}
+		}
+		if len(timers) > 0 {
+			enc := json.NewEncoder(file)
+			enc.Encode(timers)
+			file.Sync()
+		}
+		file.Close()
+	}
+}
+
 func (l *List) AddTimer(timer *Timer) {
 	log.Printf("add %+v\n", timer)
 	l.locker.Lock()
@@ -59,6 +97,7 @@ func (l *List) AddTimer(timer *Timer) {
 }
 
 func (l *List) Exit() {
+	l.Save()
 	l.exitChan <- true
 }
 
