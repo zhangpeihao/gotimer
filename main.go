@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"strconv"
 	"syscall"
+	gotime "time"
 
 	"github.com/zhangpeihao/gotimer/list"
 )
@@ -55,14 +56,18 @@ func addHandler(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte(`{"ret":"1000","msg":"parameter error"}`))
 		return
 	}
-	timeInt, err := strconv.Atoi(time)
+	i, err := strconv.Atoi(time)
 	if err != nil {
 		log.Printf("time isn't an integer, callback: %s, time: %s\n", callback, time)
 		w.Write([]byte(`{"ret":"1000","msg":"parameter error"}`))
 		return
 	}
+	timeInt := int64(i)
+	if timeInt < 3600*24*30 {
+		timeInt = gotime.Now().Unix() + timeInt
+	}
 	g_list.AddTimer(&list.Timer{
-		Time:     int64(timeInt),
+		Time:     timeInt,
 		Callback: callback,
 	})
 	w.Write([]byte(`{"ret":"1","msg":"OK"}`))
