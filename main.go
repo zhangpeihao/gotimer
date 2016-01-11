@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	programName = "gocmd"
-	version     = "0.1"
+	programName = "gotimer"
+	version     = "0.2"
 )
 
 var (
