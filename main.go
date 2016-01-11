@@ -63,7 +63,7 @@ func addHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	timeInt := int64(i)
-	if timeInt < 3600*24*30 {
+	if timeInt < 1450000000 {
 		timeInt = gotime.Now().Unix() + timeInt
 	}
 	g_list.AddTimer(&list.Timer{
