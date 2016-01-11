@@ -71,5 +71,5 @@ func addHandler(w http.ResponseWriter, req *http.Request) {
 		Time:     timeInt,
 		Callback: callback,
 	})
-	w.Write([]byte(`{"ret":"1","msg":"OddK"}`))
+	w.Write([]byte(`{"ret":"1","msg":"OK"}`))
 }
